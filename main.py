@@ -1,8 +1,8 @@
-from cli import CLI
-from console_ui import ConsoleUI
-from benchmark_service import BenchmarkService
-from dataset_loader import DatasetLoader
-from prompts import PromptBuilder
+from app.cli import CLI
+from app.console_ui import ConsoleUI
+from app.benchmark_service import BenchmarkService
+from dataset.dataset_loader import DatasetLoader
+from llm.prompts import PromptBuilder
 from llm.gemini_provider import GeminiProvider
 
 

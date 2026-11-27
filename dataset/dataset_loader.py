@@ -6,7 +6,7 @@ from collections import Counter
 class DatasetLoader:
     """Loads and provides access to RSA benchmark cases."""
 
-    DEFAULT_PATH = Path(__file__).resolve().parent / "data" / "cases.json"
+    DEFAULT_PATH = Path(__file__).resolve().parent.parent / "data" / "cases.json"
 
     PUBLIC_FIELDS = ("n1", "n2", "e1", "e2", "c1", "c2")
 

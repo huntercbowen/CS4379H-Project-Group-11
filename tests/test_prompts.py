@@ -1,6 +1,6 @@
 import unittest
 
-from prompts import PromptBuilder, PromptStrategy
+from llm.prompts import PromptBuilder, PromptStrategy
 
 
 class TestPromptBuilder(unittest.TestCase):

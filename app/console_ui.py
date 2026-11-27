@@ -1,6 +1,6 @@
 import json
 
-from prompts import PromptStrategy
+from llm.prompts import PromptStrategy
 
 
 class ConsoleUI:

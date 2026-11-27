@@ -1,6 +1,6 @@
 import unittest
 
-from dataset_loader import DatasetLoader
+from dataset.dataset_loader import DatasetLoader
 
 
 class TestDatasetLoader(unittest.TestCase):

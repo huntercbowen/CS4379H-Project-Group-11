@@ -27,7 +27,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from rsa_math import ascii_to_int, common_modulus_attack, extended_gcd, generate_prime
+from crypto.rsa_math import ascii_to_int, common_modulus_attack, extended_gcd, generate_prime
 
 DEFAULT_SEED = 4379
 
@@ -423,7 +423,11 @@ def verify_dataset(dataset: Dict[str, Any]) -> Tuple[int, int]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate deterministic RSA Common-Modulus test cases.")
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
-    parser.add_argument("--output", type=str, default=os.path.join("data", "cases.json"))
+    parser.add_argument("--output", type=str, default=str(
+        Path(__file__).resolve().parent.parent
+        / "data"
+        / "cases.json"
+    ))
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
 

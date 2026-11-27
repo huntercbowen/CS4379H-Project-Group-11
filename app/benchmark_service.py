@@ -1,4 +1,4 @@
-from rsa_math import common_modulus_attack
+from crypto.rsa_math import common_modulus_attack
 
 
 class BenchmarkService:
