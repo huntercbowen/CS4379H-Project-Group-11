@@ -10,8 +10,8 @@ import math
 import random
 import unittest
 
-from generate_dataset import DEFAULT_SEED, build_dataset, verify_dataset
-from rsa_math import (
+from dataset.generate_dataset import DEFAULT_SEED, build_dataset, verify_dataset
+from crypto.rsa_math import (
     ascii_to_int,
     common_modulus_attack,
     extended_gcd,
