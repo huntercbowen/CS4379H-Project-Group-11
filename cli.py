@@ -1,4 +1,6 @@
 from dataset_loader import DatasetLoader
+from prompts import PromptBuilder, PromptStrategy
+
 from rsa_math import common_modulus_attack
 
 class CLI:
@@ -6,12 +8,14 @@ class CLI:
 
     def __init__(self, dataset_loader: DatasetLoader):
         self.dataset_loader = dataset_loader
+        self.prompt_builder = PromptBuilder()
 
         self.actions = {
             "1": self.view_dataset_summary,
             "2": self.list_cases,
             "3": self.inspect_case,
-            "4": self.run_reference_solver
+            "4": self.run_reference_solver,
+            "5": self.generate_prompt
         }
 
     def display_menu(self):
@@ -22,6 +26,7 @@ class CLI:
         print("[2] List test cases")
         print("[3] Inspect test case")
         print("[4] Run reference solver")
+        print("[5] Generate LLM prompt")
         print("[0] Exit")
         print("=" * 45)
 
@@ -160,3 +165,51 @@ class CLI:
             print("Overall result: PASS")
         else:
             print("Overall result: FAIL")
+
+    def select_prompt_strategy(self):
+        """Allow the user to choose a prompting strategy."""
+
+        print("\n--- Prompt Strategies ---")
+        print("[1] Baseline")
+        print("[2] Enhanced")
+
+        choice = input("Select strategy: ").strip()
+
+        strategies = {
+            "1": PromptStrategy.BASELINE,
+            "2": PromptStrategy.ENHANCED
+        }
+
+        strategy = strategies.get(choice)
+
+        if strategy is None:
+            print("Invalid prompting strategy.")
+
+        return strategy
+
+    def generate_prompt(self):
+        """Generate an LLM prompt for a selected case."""
+
+        case = self.select_case()
+
+        if case is None:
+            return
+
+        strategy = self.select_prompt_strategy()
+
+        if strategy is None:
+            return
+
+        parameters = self.dataset_loader.get_public_parameters(
+            case["case_id"]
+        )
+
+        prompt = self.prompt_builder.build(
+            parameters,
+            strategy
+        )
+
+        print("\n--- Generated Prompt ---")
+        print("=" * 45)
+        print(prompt)
+        print("=" * 45)
