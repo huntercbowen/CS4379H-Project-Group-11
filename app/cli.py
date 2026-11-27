@@ -115,19 +115,18 @@ class CLI:
             self.ui.message("Trial cancelled.")
             return
 
-        prompt = self.benchmark.build_prompt(
-            case_id, strategy
+        trial = self.benchmark.create_trial(
+            case_id, strategy, model
         )
 
         try:
             self.ui.message("\nSubmitting request...")
 
-            response = self.benchmark.run_trial(
-                prompt, model
-            )
+            result = self.benchmark.run_trial(trial)
 
-        except LLMProviderError as error:
+        except (LLMProviderError, ValueError, OSError) as error:
             self.ui.message(f"\nTrial failed: {error}")
             return
 
-        self.ui.display_llm_response(response)
+        self.ui.message("\nResponse saved successfully.")
+        self.ui.display_llm_response(result.response)

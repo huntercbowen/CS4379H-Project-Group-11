@@ -80,8 +80,8 @@ class GeminiProvider(LLMProvider):
         except HTTPError as error:
             detail = error.reason
 
-            if error.fp is not None:
-                try:
+            try:    
+                if error.fp is not None:
                     error_data = json.loads(
                         error.read().decode("utf-8")
                     )
@@ -91,8 +91,11 @@ class GeminiProvider(LLMProvider):
                         error.reason
                 )
 
-                except (ValueError, UnicodeError, AttributeError):
-                    pass
+            except (ValueError, UnicodeError, AttributeError):
+                pass
+
+            finally:
+                error.close()
                 
             raise LLMProviderError(
                 f"Google API returned HTTP {error.code}: {detail}"

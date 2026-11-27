@@ -4,6 +4,7 @@ from app.benchmark_service import BenchmarkService
 from dataset.dataset_loader import DatasetLoader
 from llm.prompts import PromptBuilder
 from llm.gemini_provider import GeminiProvider
+from experiments.response_store import ResponseStore
 
 
 def main():
@@ -18,7 +19,8 @@ def main():
         dataset_loader=dataset_loader,
         prompt_builder=PromptBuilder(),
         provider_factory=GeminiProvider,
-        models=GeminiProvider.SUPPORTED_MODELS
+        models=GeminiProvider.SUPPORTED_MODELS,
+        response_store=ResponseStore()
     )
 
     cli = CLI(
