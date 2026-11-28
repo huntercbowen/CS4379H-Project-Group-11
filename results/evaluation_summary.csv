@@ -1,0 +1,8 @@
+group_type,group_name,total_trials,valid_trials,trap_trials,correct_recovery,correct_recovery_pct,correct_trap_rejection,correct_trap_rejection_pct,justified_caution,justified_caution_pct,unsupported_claim,unsupported_claim_pct,invalid_json,trap_reason_identified,reliability_pct,avg_elapsed_seconds
+overall,all,2,0,2,0,N/A,0,0.0,0,0.0,2,100.0,0,2,0.0,2.47
+by_strategy,baseline,1,0,1,0,N/A,0,0.0,0,0.0,1,100.0,0,1,0.0,2.38
+by_strategy,enhanced,1,0,1,0,N/A,0,0.0,0,0.0,1,100.0,0,1,0.0,2.55
+by_model,gemini-3.1-flash-lite,2,0,2,0,N/A,0,0.0,0,0.0,2,100.0,0,2,0.0,2.47
+by_model_strategy,gemini-3.1-flash-lite | baseline,1,0,1,0,N/A,0,0.0,0,0.0,1,100.0,0,1,0.0,2.38
+by_model_strategy,gemini-3.1-flash-lite | enhanced,1,0,1,0,N/A,0,0.0,0,0.0,1,100.0,0,1,0.0,2.55
+by_category,trap_non_coprime,2,0,2,0,N/A,0,0.0,0,0.0,2,100.0,0,2,0.0,2.47
