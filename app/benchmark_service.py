@@ -1,4 +1,11 @@
+from pathlib import Path
+
 from crypto.rsa_math import common_modulus_attack
+from evaluation.evaluator import (
+    BenchmarkEvaluator,
+    export_evaluations_csv,
+    export_summary_csv,
+)
 from experiments.trial import Trial, TrialResult
 
 
@@ -18,6 +25,7 @@ class BenchmarkService:
         self.provider_factory = provider_factory
         self.models = tuple(models)
         self.response_store = response_store
+        self.evaluator = BenchmarkEvaluator(dataset_loader)
 
     def solve_case(self, case_id):
         case = self.dataset_loader.get_case(case_id)
@@ -84,3 +92,34 @@ class BenchmarkService:
         """Retrieve completed experimental trials."""
 
         return self.response_store.load_all()
+
+    def evaluate_saved_results(self):
+        """Score all persisted experimental trials offline against ground truth."""
+
+        saved = self.get_saved_results()
+        if not saved:
+            return None
+
+        return self.evaluator.evaluate_all(saved)
+
+    def export_evaluation_reports(self, output_dir=None):
+        """Evaluate saved trials and write CSV detail and summary reports."""
+
+        report = self.evaluate_saved_results()
+        if report is None:
+            return None
+
+        target_dir = (
+            Path(output_dir)
+            if output_dir is not None
+            else self.response_store.file_path.parent
+        )
+        details_path = export_evaluations_csv(
+            report["evaluations"],
+            target_dir / "evaluation_details.csv",
+        )
+        summary_path = export_summary_csv(
+            report,
+            target_dir / "evaluation_summary.csv",
+        )
+        return details_path, summary_path

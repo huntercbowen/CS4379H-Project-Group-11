@@ -15,7 +15,9 @@ class CLI:
             "3": ("Inspect test case", self.inspect_case),
             "4": ("Run reference solver", self.run_reference_solver),
             "5": ("Generate LLM prompt", self.generate_prompt),
-            "6": ("Run single LLM trial", self.run_single_trial)
+            "6": ("Run single LLM trial", self.run_single_trial),
+            "7": ("Evaluate saved results (offline)", self.evaluate_saved_results),
+            "8": ("Export evaluation CSV reports", self.export_evaluation_reports),
         }
 
     def run(self):
@@ -130,3 +132,26 @@ class CLI:
 
         self.ui.message("\nResponse saved successfully.")
         self.ui.display_llm_response(result.response)
+
+    def evaluate_saved_results(self):
+        report = self.benchmark.evaluate_saved_results()
+
+        if report is None:
+            self.ui.message("\nNo saved trials found to evaluate.")
+            return
+
+        self.ui.display_evaluation_report(report)
+
+    def export_evaluation_reports(self):
+        exported = self.benchmark.export_evaluation_reports()
+
+        if exported is None:
+            self.ui.message("\nNo saved trials found to export.")
+            return
+
+        details_path, summary_path = exported
+        self.ui.message(
+            f"\nExported evaluation reports:\n"
+            f"  - {details_path}\n"
+            f"  - {summary_path}"
+        )
