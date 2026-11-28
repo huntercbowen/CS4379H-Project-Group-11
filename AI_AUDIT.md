@@ -44,6 +44,7 @@ Roles: Reviewer, Archaeologist, Student Researcher, Reproducibility Checker, Qua
 | 15 | 2026-10-05 | Reviewer | Comparison 2: strong proof-score correlation is right, with a qualification about individual errors. | OK | partially | Section 3.4 reports Pearson 0.9025 and Spearman 0.8973 on 306 samples, averaging six scores. Review itself does not claim error-free grading. | ChatGPT source check; team signoff pending |
 | 16 | 2026-10-05 | Reviewer | Comparison 3: human comparison is shallow because conditions differ. | OC | partially | Sections 3.3 and 4.2: model pass@3 over 150 tasks; human CTF baseline from a 100-task subset. OC flags an omitted qualification, not a fabricated or numerically false claim. | ChatGPT source check; team signoff pending |
 | 17 | 2026-10-05 | Student Researcher | Updated two-page proposal with the three supplied member names and selected AI-origin topic. | — | partially | Names taken directly from user; selected topic and experiment plan retained. Human review of course links and resources is still required. No experimental results are asserted. | ChatGPT consistency check; team signoff pending |
+| 18 | 2026-11-28 | Reproducibility Checker | ChatGPT assisted with showing N/A for percentages with zero denominators and adding a regression test. | OK | yes | Julian ran python3 -m unittest discover -v on his Mac; all 50 tests passed, including checks for empty evaluations, preserved 0.0% scores, terminal formatting, and CSV output. | Julian Gomez |
 
 ## Verification before submission and implementation
 

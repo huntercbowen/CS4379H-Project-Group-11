@@ -332,8 +332,9 @@ def summarize_group(evaluations: List[TrialEvaluation]) -> Dict[str, Any]:
     invalid_json = sum(not e.json_valid for e in evaluations)
     reason_matched_on_traps = sum(e.identified_failure_reason for e in trap_cases)
 
-    def _pct(num: int, den: int) -> float:
-        return round((100.0 * num / den), 1) if den > 0 else 0.0
+    def _pct(num: int, den: int) -> Optional[float]:
+        """Return no measurement when the denominator is zero."""
+        return round((100.0 * num / den), 1) if den > 0 else None
 
     # Overall reliability = (correct recovery on valid + justified caution on valid/trap) / total
     reliable_count = correct_recovery + justified_caution
@@ -389,7 +390,10 @@ def export_summary_csv(report: Dict[str, Any], output_path: Path) -> Path:
 
     def _add_row(group_type: str, group_name: str, stats: Dict[str, Any]) -> None:
         row = {"group_type": group_type, "group_name": group_name}
-        row.update(stats)
+        row.update({
+            key: "N/A" if key.endswith("_pct") and value is None else value
+            for key, value in stats.items()
+        })
         rows.append(row)
 
     _add_row("overall", "all", report["overall"])
@@ -404,6 +408,9 @@ def export_summary_csv(report: Dict[str, Any], output_path: Path) -> Path:
         writer.writerows(rows)
     return output_path
 
+def format_percentage(value: Optional[float]) -> str:
+    """Distinguish an unavailable measurement from a measured zero."""
+    return "N/A" if value is None else f"{value:.1f}%"
 
 def format_report_text(report: Dict[str, Any]) -> str:
     """Render an offline-friendly terminal summary table of evaluation metrics."""
@@ -413,15 +420,15 @@ def format_report_text(report: Dict[str, Any]) -> str:
         f"Total trials evaluated : {overall['total_trials']} "
         f"(valid={overall['valid_trials']}, trap={overall['trap_trials']})",
         f"Correct recovery       : {overall['correct_recovery']}/{overall['valid_trials']} "
-        f"({overall['correct_recovery_pct']}% of valid)",
+        f"({format_percentage(overall['correct_recovery_pct'])} of valid)",
         f"Correct trap rejection : {overall['correct_trap_rejection']}/{overall['trap_trials']} "
-        f"({overall['correct_trap_rejection_pct']}% of traps)",
+        f"({format_percentage(overall['correct_trap_rejection_pct'])} of traps)",
         f"Justified caution      : {overall['justified_caution']}/{overall['total_trials']} "
-        f"({overall['justified_caution_pct']}%)",
+        f"({format_percentage(overall['justified_caution_pct'])})",
         f"Unsupported claims     : {overall['unsupported_claim']}/{overall['total_trials']} "
-        f"({overall['unsupported_claim_pct']}%)",
+        f"({format_percentage(overall['unsupported_claim_pct'])})",
         f"Invalid JSON responses : {overall['invalid_json']}",
-        f"Overall reliability    : {overall['reliability_pct']}%",
+        f"Overall reliability    : {format_percentage(overall['reliability_pct'])}",
     ]
 
     def _append_table(title: str, grouped: Dict[str, Dict[str, Any]]) -> None:
@@ -436,7 +443,7 @@ def format_report_text(report: Dict[str, Any]) -> str:
             lines.append(
                 f"{name:<34} {s['total_trials']:>4} {s['correct_recovery']:>6} "
                 f"{s['justified_caution']:>8} {s['unsupported_claim']:>7} "
-                f"{s['invalid_json']:>8} {s['reliability_pct']:>5.1f}%"
+                f"{s['invalid_json']:>8} {format_percentage(s['reliability_pct']):>6}"
             )
 
     _append_table("By Prompt Strategy", report["by_strategy"])

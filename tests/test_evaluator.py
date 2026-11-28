@@ -159,6 +159,55 @@ class TestEvaluator(unittest.TestCase):
             self.assertTrue(details_csv.exists())
             self.assertTrue(summary_csv.exists())
 
+    def test_unmeasured_rates_are_na_and_measured_zero_is_preserved(self):
+        """Missing samples must not be reported as measured zero accuracy."""
+        trial = self._make_trial_result(
+            "CASE-026",
+            json.dumps({
+                "attack_applicable": True,
+                "recovered_m": "123456",
+                "failure_code": "ok",
+            }),
+        )
+        report = self.evaluator.evaluate_all([trial])
+
+        # No valid cases were evaluated, but one trap was evaluated incorrectly.
+        self.assertIsNone(report["overall"]["correct_recovery_pct"])
+        self.assertEqual(report["overall"]["correct_trap_rejection_pct"], 0.0)
+        self.assertEqual(report["overall"]["reliability_pct"], 0.0)
+
+        text = format_report_text(report)
+        self.assertIn("0/0 (N/A of valid)", text)
+        self.assertIn("0/1 (0.0% of traps)", text)
+        self.assertIn("Overall reliability    : 0.0%", text)
+
+        # An entirely empty experiment has no measured reliability.
+        empty_report = self.evaluator.evaluate_all([])
+        self.assertIsNone(empty_report["overall"]["reliability_pct"])
+        self.assertIn(
+            "Overall reliability    : N/A",
+            format_report_text(empty_report),
+        )
+
+        # Exported reports preserve the same distinction.
+        import csv
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = export_summary_csv(report, Path(tmp) / "summary.csv")
+            with path.open(encoding="utf-8", newline="") as file:
+                overall = next(csv.DictReader(file))
+
+            self.assertEqual(overall["correct_recovery_pct"], "N/A")
+            self.assertEqual(overall["correct_trap_rejection_pct"], "0.0")
+
+            empty_path = export_summary_csv(
+                empty_report, Path(tmp) / "empty_summary.csv"
+            )
+            with empty_path.open(encoding="utf-8", newline="") as file:
+                empty_overall = next(csv.DictReader(file))
+
+            self.assertEqual(empty_overall["reliability_pct"], "N/A")
+
 
 if __name__ == "__main__":
     unittest.main()
