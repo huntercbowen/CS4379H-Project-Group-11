@@ -1,5 +1,6 @@
 import json
 
+from evaluation.evaluator import format_report_text
 from llm.prompts import PromptStrategy
 
 
@@ -161,3 +162,14 @@ class ConsoleUI:
 
         if response.finish_reason != "STOP":
             print("\nWarning: Generation may be incomplete.")
+    def display_evaluation_report(self, report):
+        print(format_report_text(report))
+        print("\n--- Per-Trial Outcomes (latest 10) ---")
+        print(f"{'Case':<10} {'Model':<24} {'Strategy':<10} {'Outcome':<19} {'Notes'}")
+        print("-" * 90)
+
+        for ev in report["evaluations"][-10:]:
+            print(
+                f"{ev.case_id:<10} {ev.model:<24} {ev.strategy:<10} "
+                f"{ev.outcome:<19} {ev.notes}"
+            )
